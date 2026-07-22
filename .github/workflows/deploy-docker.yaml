@@ -39,22 +39,13 @@ jobs:
       - name: Build application
         run: npm run build
 
-      - name: Check for coverage output
-        if: always()
-        id: coverage-check
-        run: |
-          if [ -d coverage ] && [ -n "$(find coverage -mindepth 1 -maxdepth 1 -print -quit)" ]; then
-            echo "found=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "found=false" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Upload test coverage
-        if: always() && steps.coverage-check.outputs.found == 'true'
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: angular-test-coverage
           path: coverage/
+          if-no-files-found: ignore
           retention-days: 10
 
   dockerize_and_push:
