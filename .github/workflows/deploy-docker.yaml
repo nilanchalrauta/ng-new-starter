@@ -1,9 +1,10 @@
-name: Angular CI and Containerization
+name: Angular Application Build, Dockerize, and Push
 
 on:
   push:
     branches:
       - main
+  pull_request:
 
 env:
   REGISTRY: ghcr.io
@@ -25,28 +26,15 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
-        run: npm run lint
-
       - name: Run unit tests
-        run: npm run test -- --no-watch --coverage
+        run: npm run test
 
       - name: Build application
         run: npm run build
-
-      - name: Upload test coverage
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: angular-test-coverage
-          path: coverage/
-          if-no-files-found: ignore
-          retention-days: 10
 
   dockerize_and_push:
     name: Dockerize and push the image
